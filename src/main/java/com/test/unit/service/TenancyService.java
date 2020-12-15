@@ -1,12 +1,13 @@
 package com.test.unit.service;
 
+import static com.test.unit.util.DateUtils.add;
+
 import java.util.Date;
 
 import com.test.unit.entity.Movie;
 import com.test.unit.entity.Tenancy;
 import com.test.unit.entity.User;
-
-import static com.test.unit.util.DateUtils.*;
+import com.test.unit.util.DateUtils;
 
 public class TenancyService {
 
@@ -34,9 +35,9 @@ public class TenancyService {
 		Tenancy tenancy = service.rentMovie(user, movie);
 		
 		// verificação
-		System.out.println(tenancy.getValue());
-		System.out.println(tenancy.getTenancyDate());
-		System.out.println(tenancy.getReturnDate());
+		System.out.println(tenancy.getValue() == 5.0);
+		System.out.println(DateUtils.isDateEquals(tenancy.getTenancyDate(), new Date()));
+		System.out.println(DateUtils.isDateEquals(tenancy.getReturnDate(), DateUtils.getDateWithDifferenceOfTheDays(1)));
 	}
 	
 }
