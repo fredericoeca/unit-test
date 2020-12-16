@@ -4,6 +4,9 @@ import static com.test.unit.util.DateUtils.add;
 
 import java.util.Date;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import com.test.unit.entity.Movie;
 import com.test.unit.entity.Tenancy;
 import com.test.unit.entity.User;
@@ -25,7 +28,9 @@ public class TenancyService {
 		return tenancy;
 	}
 	
-	public static void main(String[] args) {
+	@Test
+	public void teste() {
+		
 		// cenário
 		TenancyService service = new TenancyService();
 		User user = new User("User One");
@@ -35,9 +40,9 @@ public class TenancyService {
 		Tenancy tenancy = service.rentMovie(user, movie);
 		
 		// verificação
-		System.out.println(tenancy.getValue() == 5.0);
-		System.out.println(DateUtils.isDateEquals(tenancy.getTenancyDate(), new Date()));
-		System.out.println(DateUtils.isDateEquals(tenancy.getReturnDate(), DateUtils.getDateWithDifferenceOfTheDays(1)));
+		Assert.assertTrue(tenancy.getValue() == 5.0);
+		Assert.assertTrue(DateUtils.isDateEquals(tenancy.getTenancyDate(), new Date()));
+		Assert.assertTrue(DateUtils.isDateEquals(tenancy.getReturnDate(), DateUtils.getDateWithDifferenceOfTheDays(1)));
 	}
 	
 }
