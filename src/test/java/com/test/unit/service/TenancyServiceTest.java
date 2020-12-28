@@ -15,16 +15,16 @@ public class TenancyServiceTest {
 	@Test
 	public void teste() {
 		
-		// cenário
+		// scenario
 		TenancyService service = new TenancyService();
 		User user = new User("User One");
 		Movie movie = new Movie("Movie 1", 2, 5.0);		
 		
-		// ação
+		// action
 		Tenancy tenancy = service.rentMovie(user, movie);
 		
-		// verificação
-		Assert.assertTrue(tenancy.getValue() == 5.0);
+		// checks
+		Assert.assertEquals(5.0, tenancy.getValue(), 0.01);
 		Assert.assertTrue(DateUtils.isDateEquals(tenancy.getTenancyDate(), new Date()));
 		Assert.assertTrue(DateUtils.isDateEquals(tenancy.getReturnDate(), DateUtils.getDateWithDifferenceOfTheDays(1)));
 	}
