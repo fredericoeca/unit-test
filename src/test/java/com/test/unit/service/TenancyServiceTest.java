@@ -4,6 +4,7 @@ import static com.test.unit.util.DateUtils.getDateWithDifferenceOfTheDays;
 import static com.test.unit.util.DateUtils.isDateEquals;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThrows;
 
 import java.util.Date;
 
@@ -14,6 +15,7 @@ import org.junit.rules.ErrorCollector;
 import com.test.unit.entity.Movie;
 import com.test.unit.entity.Tenancy;
 import com.test.unit.entity.User;
+import com.test.unit.exception.FilmWithoutStockException;
 
 public class TenancyServiceTest {
 
@@ -21,7 +23,7 @@ public class TenancyServiceTest {
 	public ErrorCollector error = new ErrorCollector();
 	
 	@Test
-	public void testeTenancy() {
+	public void testTenancy() throws Exception {
 				
 		// scenario
 		TenancyService service = new TenancyService();
@@ -32,8 +34,34 @@ public class TenancyServiceTest {
 		Tenancy tenancy = service.rentMovie(user, movie);
 		
 		// checks
-		error.checkThat(tenancy.getValue(), is(equalTo(6.0)));
+		error.checkThat(tenancy.getValue(), is(equalTo(5.0)));
 		error.checkThat(isDateEquals(tenancy.getTenancyDate(), new Date()), is(true));
-		error.checkThat(isDateEquals(tenancy.getReturnDate(), getDateWithDifferenceOfTheDays(1)), is(false));
+		error.checkThat(isDateEquals(tenancy.getReturnDate(), getDateWithDifferenceOfTheDays(1)), is(true));
+		
+	}
+	
+	@Test(expected = FilmWithoutStockException.class)
+	public void testTenancy_filmWithoutStock() throws Exception {
+				
+		// scenario
+		TenancyService service = new TenancyService();
+		User user = new User("User One");
+		Movie movie = new Movie("Movie 1", 0, 5.0);		
+		
+		// action
+		service.rentMovie(user, movie);			
+	}
+	
+	@Test
+	public void testTenancy_filmWithoutStock_2() throws Exception {
+				
+		// scenario
+		TenancyService service = new TenancyService();
+		User user = new User("User One");
+		Movie movie = new Movie("Movie 1", 0, 5.0);		
+	
+		assertThrows(Exception.class, () -> {
+			service.rentMovie(user, movie);		
+		});				
 	}
 }

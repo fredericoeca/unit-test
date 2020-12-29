@@ -7,10 +7,16 @@ import java.util.Date;
 import com.test.unit.entity.Movie;
 import com.test.unit.entity.Tenancy;
 import com.test.unit.entity.User;
+import com.test.unit.exception.FilmWithoutStockException;
 
 public class TenancyService {
 
-	public Tenancy rentMovie(User user, Movie movie) {
+	public Tenancy rentMovie(User user, Movie movie) throws Exception {
+		
+		if(movie.getStock() == 0) {
+			throw new FilmWithoutStockException();
+		}
+		
 		Tenancy tenancy = new Tenancy();
 		tenancy.setMovie(movie);
 		tenancy.setUser(user);
