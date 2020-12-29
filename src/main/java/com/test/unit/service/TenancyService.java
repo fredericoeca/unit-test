@@ -8,10 +8,19 @@ import com.test.unit.entity.Movie;
 import com.test.unit.entity.Tenancy;
 import com.test.unit.entity.User;
 import com.test.unit.exception.FilmWithoutStockException;
+import com.test.unit.exception.VideoStoreException;
 
 public class TenancyService {
 
-	public Tenancy rentMovie(User user, Movie movie) throws Exception {
+	public Tenancy rentMovie(User user, Movie movie) throws FilmWithoutStockException, VideoStoreException {
+		
+		if(user == null) {
+			throw new VideoStoreException("Empty user");
+		}
+		
+		if(movie == null) {
+			throw new VideoStoreException("Empty movie");
+		}
 		
 		if(movie.getStock() == 0) {
 			throw new FilmWithoutStockException();

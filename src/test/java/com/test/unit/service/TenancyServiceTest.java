@@ -4,23 +4,30 @@ import static com.test.unit.util.DateUtils.getDateWithDifferenceOfTheDays;
 import static com.test.unit.util.DateUtils.isDateEquals;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 
 import java.util.Date;
 
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
+import org.junit.rules.ExpectedException;
 
 import com.test.unit.entity.Movie;
 import com.test.unit.entity.Tenancy;
 import com.test.unit.entity.User;
 import com.test.unit.exception.FilmWithoutStockException;
+import com.test.unit.exception.VideoStoreException;
 
 public class TenancyServiceTest {
 
 	@Rule
 	public ErrorCollector error = new ErrorCollector();
+	
+	@Rule 
+	public ExpectedException exception = ExpectedException.none();
 	
 	@Test
 	public void testTenancy() throws Exception {
@@ -36,8 +43,7 @@ public class TenancyServiceTest {
 		// checks
 		error.checkThat(tenancy.getValue(), is(equalTo(5.0)));
 		error.checkThat(isDateEquals(tenancy.getTenancyDate(), new Date()), is(true));
-		error.checkThat(isDateEquals(tenancy.getReturnDate(), getDateWithDifferenceOfTheDays(1)), is(true));
-		
+		error.checkThat(isDateEquals(tenancy.getReturnDate(), getDateWithDifferenceOfTheDays(1)), is(true));	
 	}
 	
 	@Test(expected = FilmWithoutStockException.class)
@@ -53,7 +59,7 @@ public class TenancyServiceTest {
 	}
 	
 	@Test
-	public void testTenancy_filmWithoutStock_2() throws Exception {
+	public void testTenancy_filmWithoutStock_2() {
 				
 		// scenario
 		TenancyService service = new TenancyService();
@@ -63,5 +69,35 @@ public class TenancyServiceTest {
 		assertThrows(Exception.class, () -> {
 			service.rentMovie(user, movie);		
 		});				
+	}
+	
+	@Test
+	public void testTenancy_emptyUser() throws FilmWithoutStockException {
+				
+		// scenario
+		TenancyService service = new TenancyService();
+		Movie movie = new Movie("Movie 1", 2, 5.0);		
+	
+		try {
+			service.rentMovie(null, movie);
+			Assert.fail();
+		} catch (VideoStoreException e) {
+			assertThat(e.getMessage(), is("Empty user"));
+		}		
+		
+	}
+	
+	@Test
+	public void testTenancy_emptyMovie() throws FilmWithoutStockException, VideoStoreException {
+				
+		// scenario
+		TenancyService service = new TenancyService();
+		User user = new User("User One");		
+	
+		exception.expect(VideoStoreException.class);
+		exception.expectMessage("Empty movie");
+		
+		service.rentMovie(user, null);		
+
 	}
 }
