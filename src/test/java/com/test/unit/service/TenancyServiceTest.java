@@ -1,14 +1,16 @@
 package com.test.unit.service;
 
+import static com.test.unit.util.DateUtils.getDateWithDifferenceOfTheDays;
+import static com.test.unit.util.DateUtils.isDateEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Date;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.test.unit.entity.Movie;
 import com.test.unit.entity.Tenancy;
 import com.test.unit.entity.User;
-import com.test.unit.util.DateUtils;
 
 public class TenancyServiceTest {
 
@@ -24,9 +26,9 @@ public class TenancyServiceTest {
 		Tenancy tenancy = service.rentMovie(user, movie);
 		
 		// checks
-		Assert.assertEquals(5.0, tenancy.getValue(), 0.01);
-		Assert.assertTrue(DateUtils.isDateEquals(tenancy.getTenancyDate(), new Date()));
-		Assert.assertTrue(DateUtils.isDateEquals(tenancy.getReturnDate(), DateUtils.getDateWithDifferenceOfTheDays(1)));
+		assertThat(tenancy.getValue().equals(5.0));
+		assertThat(isDateEquals(tenancy.getTenancyDate(), new Date()));
+		assertThat(isDateEquals(tenancy.getReturnDate(), getDateWithDifferenceOfTheDays(1)));
 	}
 	
 }
