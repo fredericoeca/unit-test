@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
-import org.junit.rules.ExpectedException;
 
 import com.test.unit.entity.Movie;
 import com.test.unit.entity.Tenancy;
@@ -25,10 +24,7 @@ public class TenancyServiceTest {
 
 	@Rule
 	public ErrorCollector error = new ErrorCollector();
-	
-	@Rule 
-	public ExpectedException exception = ExpectedException.none();
-	
+		
 	@Test
 	public void testTenancy() throws Exception {
 				
@@ -86,18 +82,5 @@ public class TenancyServiceTest {
 		}		
 		
 	}
-	
-	@Test
-	public void testTenancy_emptyMovie() throws FilmWithoutStockException, VideoStoreException {
-				
-		// scenario
-		TenancyService service = new TenancyService();
-		User user = new User("User One");		
-	
-		exception.expect(VideoStoreException.class);
-		exception.expectMessage("Empty movie");
-		
-		service.rentMovie(user, null);		
 
-	}
 }
