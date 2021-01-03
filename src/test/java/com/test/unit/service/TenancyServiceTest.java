@@ -9,7 +9,11 @@ import static org.junit.Assert.assertThrows;
 
 import java.util.Date;
 
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -24,12 +28,33 @@ public class TenancyServiceTest {
 
 	@Rule
 	public ErrorCollector error = new ErrorCollector();
+	
+	TenancyService service;
+	
+	@Before
+	public void before() {
+		service = new TenancyService();
+	}
+	
+	@After
+	public void After() {
+		System.out.println("after");
+	}
+	
+	@BeforeClass
+	public static void beforeClass() {
+		System.out.println("before class");
+	}
+	
+	@AfterClass
+	public static void AfterClass() {
+		System.out.println("after class");
+	}
 		
 	@Test
 	public void testTenancy() throws Exception {
 				
 		// scenario
-		TenancyService service = new TenancyService();
 		User user = new User("User One");
 		Movie movie = new Movie("Movie 1", 2, 5.0);		
 		
@@ -46,7 +71,6 @@ public class TenancyServiceTest {
 	public void testTenancy_filmWithoutStock() throws Exception {
 				
 		// scenario
-		TenancyService service = new TenancyService();
 		User user = new User("User One");
 		Movie movie = new Movie("Movie 1", 0, 5.0);		
 		
@@ -58,7 +82,6 @@ public class TenancyServiceTest {
 	public void testTenancy_filmWithoutStock_2() {
 				
 		// scenario
-		TenancyService service = new TenancyService();
 		User user = new User("User One");
 		Movie movie = new Movie("Movie 1", 0, 5.0);		
 	
@@ -71,7 +94,6 @@ public class TenancyServiceTest {
 	public void testTenancy_emptyUser() throws FilmWithoutStockException {
 				
 		// scenario
-		TenancyService service = new TenancyService();
 		Movie movie = new Movie("Movie 1", 2, 5.0);		
 	
 		try {
