@@ -9,11 +9,8 @@ import static org.junit.Assert.assertThrows;
 
 import java.util.Date;
 
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -35,22 +32,7 @@ public class TenancyServiceTest {
 	public void before() {
 		service = new TenancyService();
 	}
-	
-	@After
-	public void After() {
-		System.out.println("after");
-	}
-	
-	@BeforeClass
-	public static void beforeClass() {
-		System.out.println("before class");
-	}
-	
-	@AfterClass
-	public static void AfterClass() {
-		System.out.println("after class");
-	}
-		
+			
 	@Test
 	public void testTenancy() throws Exception {
 				
