@@ -1,12 +1,12 @@
 package com.test.unit.service;
 
+import static com.test.unit.matchers.OwnMatchers.isMonday;
 import static com.test.unit.util.DateUtils.getDateWithDifferenceOfTheDays;
 import static com.test.unit.util.DateUtils.isDateEquals;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -25,6 +25,7 @@ import com.test.unit.entity.Rent;
 import com.test.unit.entity.User;
 import com.test.unit.exception.FilmWithoutStockException;
 import com.test.unit.exception.VideoStoreException;
+import com.test.unit.matchers.OwnMatchers;
 import com.test.unit.util.DateUtils;
 
 public class RentServiceTest {
@@ -56,7 +57,9 @@ public class RentServiceTest {
 		// checks
 		error.checkThat(rent.getValue(), is(equalTo(11.0)));
 		error.checkThat(isDateEquals(rent.getRentDate(), new Date()), is(true));
-		error.checkThat(isDateEquals(rent.getReturnDate(), getDateWithDifferenceOfTheDays(1)), is(true));	
+		error.checkThat(isDateEquals(rent.getReturnDate(), getDateWithDifferenceOfTheDays(1)), is(true));
+		error.checkThat(rent.getReturnDate(), OwnMatchers.getDateWithDifferenceOfTheDays(1));
+		error.checkThat(rent.getReturnDate(), OwnMatchers.today());
 	}
 	
 	@Test(expected = FilmWithoutStockException.class)
@@ -188,8 +191,8 @@ public class RentServiceTest {
 		Rent rent = service.rentMovie(user, movies);
 		
 		// verify
-		boolean isMonday = DateUtils.checkDayOfTheWeek(rent.getReturnDate(), Calendar.MONDAY);
-		assertTrue(isMonday);
+		//assertThat(rent.getReturnDate(), isDay(Calendar.SUNDAY));
+		assertThat(rent.getReturnDate(), isMonday());
 	}
 
 }
