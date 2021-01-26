@@ -35,14 +35,30 @@ public class RentService {
 		rent.setMovie(movies);
 		rent.setUser(user);
 		rent.setRentDate(new Date());
-		rent.setValue(rent.totalPrice(movies));
-		
-		Date deliveryDate = new Date();
-		deliveryDate = add(deliveryDate, 1);
-		if(DateUtils.checkDayOfTheWeek(deliveryDate, Calendar.SUNDAY)) {
-			deliveryDate = add(deliveryDate, 1);
+		Double valueTotal = 0d;
+		for(int i = 0; i < movies.size(); i++) {
+			Movie movie = movies.get(i);
+			Double valueMovie = movie.getPrice();
+			switch (i) {
+				case 2: valueMovie = valueMovie * 0.75; break;
+				case 3: valueMovie = valueMovie * 0.5; break;
+				case 4: valueMovie = valueMovie * 0.25; break;
+				case 5: valueMovie = 0d; break;
+			}
+			valueTotal += valueMovie;
 		}
-		rent.setReturnDate(deliveryDate);
+		rent.setValue(valueTotal);
+				
+		// Delivery day
+		Date dateDelivery = new Date();
+		dateDelivery = add(dateDelivery, 1);
+		if(DateUtils.checkDayOfTheWeek(dateDelivery, Calendar.SUNDAY)) {
+			dateDelivery = add(dateDelivery, 1);
+		}
+		rent.setReturnDate(dateDelivery);
+		
+		// Save a Rent...	
+		//TODO add method save a rent
 		
 		return rent;
 	}

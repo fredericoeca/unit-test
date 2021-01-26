@@ -20,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 
+import com.test.unit.builder.UserBuilder;
 import com.test.unit.entity.Movie;
 import com.test.unit.entity.Rent;
 import com.test.unit.entity.User;
@@ -41,12 +42,12 @@ public class RentServiceTest {
 	}
 			
 	@Test
-	public void shoudRentMovieSuccess() throws Exception {
+	public void shouldRentMovieSuccess() throws Exception {
 				
 		Assume.assumeFalse(DateUtils.checkDayOfTheWeek(Calendar.getInstance().getTime(), Calendar.SATURDAY));
 		
 		// scenario
-		User user = new User("User One");
+		User user = UserBuilder.oneUser().now();
 		List<Movie> movies = new ArrayList<>();
 		movies.add(new Movie("Movie 1", 1, 5.0));
 		movies.add(new Movie("Movie 2", 2, 6.0));
@@ -59,14 +60,13 @@ public class RentServiceTest {
 		error.checkThat(isDateEquals(rent.getRentDate(), new Date()), is(true));
 		error.checkThat(isDateEquals(rent.getReturnDate(), getDateWithDifferenceOfTheDays(1)), is(true));
 		error.checkThat(rent.getReturnDate(), OwnMatchers.getDateWithDifferenceOfTheDays(1));
-		error.checkThat(rent.getReturnDate(), OwnMatchers.today());
 	}
 	
 	@Test(expected = FilmWithoutStockException.class)
 	public void shouldNotRentMovieWithoutStock_1() throws Exception {
 				
 		// scenario
-		User user = new User("User One");
+		User user = UserBuilder.oneUser().now();
 		List<Movie> movies = new ArrayList<>();
 		movies.add(new Movie("Movie 1", 0, 5.0));
 		movies.add(new Movie("Movie 2", 2, 6.0));
@@ -79,7 +79,7 @@ public class RentServiceTest {
 	public void shouldNotRentMovieWithoutStock_2() {
 				
 		// scenario
-		User user = new User("User One");
+		User user = UserBuilder.oneUser().now();
 		List<Movie> movies = new ArrayList<>();
 		movies.add(new Movie("Movie 1", 1, 5.0));
 		movies.add(new Movie("Movie 2", 0, 4.0));		
@@ -109,7 +109,7 @@ public class RentServiceTest {
 	@Test
 	public void shouldPay75percentInTheThirdMovie() throws FilmWithoutStockException, VideoStoreException {
 		// scenario
-		User user = new User("User One");
+		User user = UserBuilder.oneUser().now();
 		List<Movie> movies = new ArrayList<>();
 		movies.add(new Movie("Movie 1", 1, 4.0));
 		movies.add(new Movie("Movie 2", 2, 4.0));
@@ -125,7 +125,7 @@ public class RentServiceTest {
 	@Test
 	public void shouldPay50percentInTheFourthMovie() throws FilmWithoutStockException, VideoStoreException {
 		// scenario
-		User user = new User("User One");
+		User user = UserBuilder.oneUser().now();
 		List<Movie> movies = new ArrayList<>();
 		movies.add(new Movie("Movie 1", 1, 4.0));
 		movies.add(new Movie("Movie 2", 2, 4.0));
@@ -142,7 +142,7 @@ public class RentServiceTest {
 	@Test
 	public void shouldPay25percentInTheFifthMovie() throws FilmWithoutStockException, VideoStoreException {
 		// scenario
-		User user = new User("User One");
+		User user = UserBuilder.oneUser().now();
 		List<Movie> movies = new ArrayList<>();
 		movies.add(new Movie("Movie 1", 1, 4.0));
 		movies.add(new Movie("Movie 2", 2, 4.0));
@@ -160,7 +160,7 @@ public class RentServiceTest {
 	@Test
 	public void shouldNotPayTheSixthMovie() throws FilmWithoutStockException, VideoStoreException {
 		// scenario
-		User user = new User("User One");
+		User user = UserBuilder.oneUser().now();
 		List<Movie> movies = new ArrayList<>();
 		movies.add(new Movie("Movie 1", 1, 4.0));
 		movies.add(new Movie("Movie 2", 2, 4.0));
@@ -182,7 +182,7 @@ public class RentServiceTest {
 		Assume.assumeTrue(DateUtils.checkDayOfTheWeek(Calendar.getInstance().getTime(), Calendar.SATURDAY));
 		
 		// scenario
-		User user = new User("User One");
+		User user = UserBuilder.oneUser().now();
 		List<Movie> movies = new ArrayList<>();
 		movies.add(new Movie("Movie 1", 1, 5.0));
 		movies.add(new Movie("Movie 2", 2, 6.0));

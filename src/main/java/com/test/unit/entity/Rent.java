@@ -62,11 +62,11 @@ public class Rent {
 		this.value = value;
 	}
 
-	public Double totalPrice(List<Movie> movies) {	
+	/*public Double totalPrice(List<Movie> movies) {	
 		if(movies.size() >= 3) { movies.get(2).setPrice(movies.get(2).getPrice() * 0.75); } 
 		if(movies.size() >= 4) { movies.get(3).setPrice(movies.get(3).getPrice() * 0.5); }
 		if(movies.size() >= 5) { movies.get(4).setPrice(movies.get(4).getPrice() * 0.25); }
 		if(movies.size() >= 6) { movies.get(5).setPrice(movies.get(5).getPrice() * 0); }
 		return movies.stream().mapToDouble( m -> m.getPrice()).sum();
-	}
+	}*/
 }
