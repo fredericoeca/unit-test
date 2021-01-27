@@ -3,12 +3,14 @@ package com.test.unit.service;
 import static com.test.unit.matchers.OwnMatchers.isMonday;
 import static com.test.unit.util.DateUtils.getDateWithDifferenceOfTheDays;
 import static com.test.unit.util.DateUtils.isDateEquals;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -19,8 +21,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
+import org.mockito.Mockito;
 
+import com.test.unit.builder.MovieBuilder;
 import com.test.unit.builder.UserBuilder;
+import com.test.unit.dao.RentDAO;
 import com.test.unit.entity.Movie;
 import com.test.unit.entity.Rent;
 import com.test.unit.entity.User;
@@ -33,12 +38,19 @@ public class RentServiceTest {
 
 	@Rule
 	public ErrorCollector error = new ErrorCollector();
-	
-	RentService service;
+		
+	private RentService service;
+	private RentDAO dao;
+	private SPCService spc;	
 	
 	@Before
 	public void before() {
 		service = new RentService();
+		dao = Mockito.mock(RentDAO.class);
+		service.setRentDAO(dao);
+		
+		spc = Mockito.mock(SPCService.class);
+		service.setSPCService(spc);
 	}
 			
 	@Test
@@ -177,7 +189,7 @@ public class RentServiceTest {
 	}
 
 	@Test
-	public void souldNotReturnMovieOnSunday() throws FilmWithoutStockException, VideoStoreException {
+	public void shouldNotReturnMovieOnSunday() throws FilmWithoutStockException, VideoStoreException {
 		
 		Assume.assumeTrue(DateUtils.checkDayOfTheWeek(Calendar.getInstance().getTime(), Calendar.SATURDAY));
 		
@@ -195,4 +207,21 @@ public class RentServiceTest {
 		assertThat(rent.getReturnDate(), isMonday());
 	}
 
+	@Test(expected = VideoStoreException.class)
+	public void shouldNotUserNegative() throws FilmWithoutStockException, VideoStoreException {
+		// scenario
+		User user = UserBuilder.oneUser().now();
+		List<Movie> movies = Arrays.asList(MovieBuilder.oneMovie().now());
+		
+		Mockito.when(spc.negative(user)).thenReturn(true);
+		
+		assertThatThrownBy(() -> {
+			throw new VideoStoreException("Usuário Negativado");
+		})
+			.isInstanceOf(VideoStoreException.class)
+			.hasMessageContaining("Usuário Negativado");
+				
+		// action
+		service.rentMovie(user, movies);
+	}
 }

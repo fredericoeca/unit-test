@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.test.unit.dao.RentDAO;
 import com.test.unit.entity.Movie;
 import com.test.unit.entity.Rent;
 import com.test.unit.entity.User;
@@ -14,6 +15,9 @@ import com.test.unit.exception.VideoStoreException;
 import com.test.unit.util.DateUtils;
 
 public class RentService {
+	
+	private RentDAO rentDAO;
+	private SPCService spcService;
 
 	public Rent rentMovie(User user, List<Movie> movies) throws FilmWithoutStockException, VideoStoreException {
 		
@@ -29,6 +33,10 @@ public class RentService {
 			if(movie.getStock() == 0) {
 				throw new FilmWithoutStockException();
 			}
+		}
+		
+		if(spcService.negative(user)) {
+			throw new VideoStoreException("Usuário Negativado");
 		}
 		
 		Rent rent = new Rent();
@@ -58,9 +66,16 @@ public class RentService {
 		rent.setReturnDate(dateDelivery);
 		
 		// Save a Rent...	
-		//TODO add method save a rent
+		rentDAO.save(rent);
 		
 		return rent;
 	}
 	
+	public void setRentDAO(RentDAO dao) {
+		this.rentDAO = dao;
+	}
+	
+	public void setSPCService(SPCService spc) {
+		this.spcService = spc;
+	}
 }

@@ -1,5 +1,6 @@
 package com.test.unit.service;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -13,7 +14,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
+import org.mockito.Mockito;
 
+import com.test.unit.dao.RentDAO;
 import com.test.unit.entity.Movie;
 import com.test.unit.entity.Rent;
 import com.test.unit.entity.User;
@@ -31,9 +34,17 @@ public class CalculationOfRentValueTest {
 	@Parameter(value = 1)
 	public Double rentValue;
 	
+	private RentDAO dao;
+	private SPCService spc;
+	
 	@Before
 	public void initial() {
 		service = new RentService();
+		dao = Mockito.mock(RentDAO.class);
+		service.setRentDAO(dao);
+		
+		spc = Mockito.mock(SPCService.class);
+		service.setSPCService(spc);
 	}
 	
 	private static Movie m1 = new Movie("Movie 1", 1, 4.0);
@@ -52,11 +63,19 @@ public class CalculationOfRentValueTest {
 			{ Arrays.asList(m1,m2,m3,m4,m5,m6), 14.0 }});
 	}
 	
-	@Test
+	@Test(expected = VideoStoreException.class)
 	public void shouldCalculationOfRentValueTest() throws FilmWithoutStockException, VideoStoreException {
 		// scenario
 		User user = new User("User One");
-				
+		
+		Mockito.when(spc.negative(user)).thenReturn(true);
+		
+		assertThatThrownBy(() -> {
+			throw new VideoStoreException("Usuário Negativado");
+		})
+			.isInstanceOf(VideoStoreException.class)
+			.hasMessageContaining("Usuário Negativado");
+		
 		// action
 		Rent rent = service.rentMovie(user, movies);
 		
