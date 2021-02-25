@@ -18,7 +18,8 @@ public class RentService {
 	
 	private RentDAO rentDAO;
 	private SPCService spcService;
-
+	private EmailService emailService;
+	
 	public Rent rentMovie(User user, List<Movie> movies) throws FilmWithoutStockException, VideoStoreException {
 		
 		if(user == null) {
@@ -71,11 +72,25 @@ public class RentService {
 		return rent;
 	}
 	
+	public void notifyDelays() {
+		List<Rent> rents = rentDAO.getDelayedRentals();
+		
+		for(Rent rent: rents) {
+			if(rent.getReturnDate().before(new Date())) {
+				emailService.notifyDelay(rent.getUser());	
+			}
+		}
+	}
+	
 	public void setRentDAO(RentDAO dao) {
 		this.rentDAO = dao;
 	}
 	
 	public void setSPCService(SPCService spc) {
 		this.spcService = spc;
+	}
+	
+	public void setEmailService(EmailService email) {
+		emailService = email;
 	}
 }

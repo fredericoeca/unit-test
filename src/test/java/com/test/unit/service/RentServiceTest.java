@@ -3,11 +3,15 @@ package com.test.unit.service;
 import static com.test.unit.matchers.OwnMatchers.isMonday;
 import static com.test.unit.util.DateUtils.getDateWithDifferenceOfTheDays;
 import static com.test.unit.util.DateUtils.isDateEquals;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +28,7 @@ import org.junit.rules.ErrorCollector;
 import org.mockito.Mockito;
 
 import com.test.unit.builder.MovieBuilder;
+import com.test.unit.builder.RentBuilder;
 import com.test.unit.builder.UserBuilder;
 import com.test.unit.dao.RentDAO;
 import com.test.unit.entity.Movie;
@@ -42,6 +47,7 @@ public class RentServiceTest {
 	private RentService service;
 	private RentDAO dao;
 	private SPCService spc;	
+	private EmailService email;
 	
 	@Before
 	public void before() {
@@ -51,6 +57,9 @@ public class RentServiceTest {
 		
 		spc = Mockito.mock(SPCService.class);
 		service.setSPCService(spc);
+		
+		email = Mockito.mock(EmailService.class);
+		service.setEmailService(email);
 	}
 			
 	@Test
@@ -207,21 +216,59 @@ public class RentServiceTest {
 		assertThat(rent.getReturnDate(), isMonday());
 	}
 
-	@Test(expected = VideoStoreException.class)
-	public void shouldNotUserNegative() throws FilmWithoutStockException, VideoStoreException {
+	@Test
+	public void shouldNotUserNegative() throws FilmWithoutStockException {
 		// scenario
 		User user = UserBuilder.oneUser().now();
 		List<Movie> movies = Arrays.asList(MovieBuilder.oneMovie().now());
 		
 		Mockito.when(spc.negative(user)).thenReturn(true);
 		
-		assertThatThrownBy(() -> {
-			throw new VideoStoreException("Usuário Negativado");
-		})
-			.isInstanceOf(VideoStoreException.class)
-			.hasMessageContaining("Usuário Negativado");
-				
 		// action
-		service.rentMovie(user, movies);
+		try {
+			service.rentMovie(user, movies);
+			fail();
+		} catch (VideoStoreException e) {
+			assertThat(e.getMessage(), is("Usuário Negativado"));
+		}	
+
+		// Verify
+		verify(spc).negative(user);
 	}
+	
+	@Test
+	public void shouldSendEmailforDelayedRents() {
+		// scenario
+		User user1 = UserBuilder.oneUser().now();
+		User user2 = UserBuilder.oneUser().withName("User 2").now();
+		User user3 = UserBuilder.oneUser().withName("User 3").now();
+		List<Rent> rents = Arrays.asList(
+			RentBuilder
+				.oneRent()
+					.dueDate()
+					.withUser(user1)
+				.now(),
+			RentBuilder
+				.oneRent()	
+					.withUser(user2)
+				.now(),
+			RentBuilder
+				.oneRent()
+					.dueDate()
+					.withUser(user3)
+				.now());
+		
+		when(dao.getDelayedRentals()).thenReturn(rents);
+		
+		// action
+		service.notifyDelays();
+		
+		// verify
+		verify(email).notifyDelay(user1);
+		verify(email, never()).notifyDelay(user2);
+		verify(email).notifyDelay(user3);
+		
+		verifyNoMoreInteractions(email);
+	}
+	
 }
